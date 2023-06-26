@@ -25,7 +25,7 @@ const MyApp = function (data: any) {
   )
 }
 
-MyApp.getInitialProps = async (context: AppContext): Promise<AppProps & ILayoutProps> => {
+export const getStaticProps = async (context: AppContext): Promise<AppProps & ILayoutProps> => {
   const pageProps = await App.getInitialProps(context);
   const { data = {} } = await axios.get(`${LOCALDOMAIN}/api/layout`);
 
@@ -33,6 +33,6 @@ MyApp.getInitialProps = async (context: AppContext): Promise<AppProps & ILayoutP
     ...pageProps,
     ...data,
   };
-};
+}
 
 export default MyApp;

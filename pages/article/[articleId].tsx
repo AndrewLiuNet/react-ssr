@@ -1,9 +1,9 @@
 import { LOCALDOMAIN } from '@/utils';
 import axios from 'axios';
 import React from 'react';
-import type { GetServerSideProps, GetStaticPaths, GetStaticProps, NextPage } from 'next';
+import type { NextPage,GetStaticProps,GetStaticPaths  } from 'next';
 import styles from './styles.module.scss';
-
+import { IArticleIntro } from '../api/articleIntro';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const showdown = require('showdown');
 
@@ -30,29 +30,31 @@ const Article: NextPage<IArticleProps> = ({ title, author, description, createTi
   );
 };
 
-Article.getInitialProps = async (context): Promise<IArticleProps> => {
-  // debugger;
-  const { articleId } = context.query;
+
+
+export const getStaticPaths:GetStaticPaths = async () => {
+  const { data: articleData } = await axios.post(`${LOCALDOMAIN}/api/articleIntro`, {
+    pageNo: 1,
+    pageSize: 100,
+  });
+  const paths =  articleData.list.map((item: IArticleIntro) => ({
+    params: { id: item.articleId },
+  }))
+
+  //{ fallback: false } means other routes should 404.
+  return {paths,fallback: false }
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { id } = params;
   const { data } = await axios.get(`${LOCALDOMAIN}/api/articleInfo`, {
-    params: {
-      articleId,
-    },
+    params: { id },
   });
 
   console.log('data', data)
-  return data;
-};
-
-// export const getServerSideProps: GetServerSideProps = async context => {
-//   const { articleId } = context.query;
-//   const { data } = await axios.get(`${LOCALDOMAIN}/api/articleInfo`, {
-//     params: {
-//       articleId,
-//     },
-//   });
-//   return {
-//     props: data, // 需要拿props包裹
-//   };
-// };
+  return {
+    props:data
+  };
+}
 
 export default Article;

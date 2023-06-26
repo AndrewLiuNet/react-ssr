@@ -85,13 +85,12 @@ const Home: NextPage<IProps > = ({ title, description, articles }) => {
   );
 };
 
-Home.getInitialProps = async (context): Promise<IProps> => {
+export const getStaticProps = async (): Promise<IProps> => {
   const { data: homeData } = await axios.get(`${LOCALDOMAIN}/api/home`);
   const { data: articleData } = await axios.post(`${LOCALDOMAIN}/api/articleIntro`, {
     pageNo: 1,
     pageSize: 6,
   });
-
   return {
     title: homeData.title,
     description: homeData.description,
@@ -104,7 +103,6 @@ Home.getInitialProps = async (context): Promise<IProps> => {
       total: articleData.total,
     },
   };
-};
-
+}
 
 export default Home;
